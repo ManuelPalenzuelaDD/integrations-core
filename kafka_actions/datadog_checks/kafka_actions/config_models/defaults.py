@@ -28,9 +28,21 @@ def instance_min_collection_interval():
     return 15
 
 
-def instance_sasl_mechanism():
-    return 'PLAIN'
+def instance_sasl_kerberos_principal():
+    return 'kafkaclient'
+
+
+def instance_sasl_kerberos_service_name():
+    return 'kafka'
 
 
 def instance_security_protocol():
     return 'PLAINTEXT'
+
+
+def instance_tls_validate_hostname():
+    return True
+
+
+def instance_tls_verify():
+    return True
