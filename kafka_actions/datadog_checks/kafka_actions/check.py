@@ -32,7 +32,7 @@ class KafkaActionsCheck(AgentCheck):
         self.action = self.config.action
         self.cluster = 'unknown'  # Will be set by action handlers
 
-        self.kafka_client = KafkaActionsClient(self.instance, self.log)
+        self.kafka_client = KafkaActionsClient(self.config, self.log)
         self.deserializer = MessageDeserializer(self.log)
 
         self.action_handlers = {
