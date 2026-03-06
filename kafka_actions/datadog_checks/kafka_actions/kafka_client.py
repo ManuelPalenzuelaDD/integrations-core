@@ -50,7 +50,12 @@ class KafkaActionsClient:
             'sasl.kerberos.keytab': config.get('sasl_kerberos_keytab', os.environ.get('KRB5_CLIENT_KTNAME')),
             'sasl.kerberos.principal': config.get('sasl_kerberos_principal'),
             'sasl.kerberos.service.name': config.get('sasl_kerberos_service_name'),
+            'sasl.kerberos.domain.name': config.get('sasl_kerberos_domain_name'),
         }
+
+        tls_ciphers = config.get('tls_ciphers')
+        if tls_ciphers:
+            extras['ssl.cipher.suites'] = ':'.join(tls_ciphers)
 
         tls_verify = config.get('tls_verify')
         if tls_verify is not None:
