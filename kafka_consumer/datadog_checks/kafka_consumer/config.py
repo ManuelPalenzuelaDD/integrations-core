@@ -41,6 +41,7 @@ class KafkaConfig:
         if isinstance(self._kafka_version, str):
             self._kafka_version = tuple(map(int, self._kafka_version.split(".")))
         self._crlfile = instance.get('ssl_crlfile', instance.get('tls_crlfile'))
+        self._tls_ciphers = instance.get('tls_ciphers')
 
         self._request_timeout = init_config.get('kafka_timeout', DEFAULT_KAFKA_TIMEOUT)
         self._request_timeout_ms = self._request_timeout * 1000

@@ -77,7 +77,11 @@ class KafkaClient:
             "sasl.kerberos.keytab": self.config._sasl_kerberos_keytab,
             "sasl.kerberos.principal": self.config._sasl_kerberos_principal,
             "sasl.kerberos.service.name": self.config._sasl_kerberos_service_name,
+            "sasl.kerberos.domain.name": self.config._sasl_kerberos_domain_name,
         }
+
+        if self.config._tls_ciphers:
+            extras_parameters["ssl.cipher.suites"] = ":".join(self.config._tls_ciphers)
 
         if self.config._sasl_mechanism == "OAUTHBEARER":
             # Default to 'oidc' for backwards compatibility with existing configs

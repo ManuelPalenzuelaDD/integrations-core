@@ -1,0 +1,1 @@
+Forward sasl_kerberos_domain_name and tls_ciphers to librdkafka so these config options take effect at runtime.
