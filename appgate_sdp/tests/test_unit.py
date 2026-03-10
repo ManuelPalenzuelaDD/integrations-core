@@ -5,6 +5,7 @@ import pytest
 
 from datadog_checks.appgate_sdp import AppgateSDPCheck
 from datadog_checks.base.constants import ServiceCheck
+from datadog_checks.base.utils.http_testing import MockHTTPResponse
 from datadog_checks.dev.utils import get_metadata_metrics
 
 from .common import METRICS_MOCK, get_fixture_path
@@ -28,10 +29,10 @@ def test_check_appgate_sdp(dd_run_check, aggregator, instance, mock_http_respons
     aggregator.assert_metrics_using_metadata(get_metadata_metrics())
 
 
-def test_emits_critical_service_check_when_service_is_down(dd_run_check, aggregator, instance, mock_http_response):
-    mock_http_response(status_code=404)
+def test_emits_critical_service_check_when_service_is_down(dd_run_check, aggregator, instance, mock_http):
+    mock_http.get.return_value = MockHTTPResponse(status_code=404)
     check = AppgateSDPCheck('appgate_sdp', {}, [instance])
-    with pytest.raises(Exception, match='requests.exceptions.HTTPError'):
+    with pytest.raises(Exception, match='HTTPStatusError'):
         dd_run_check(check)
     aggregator.assert_service_check('appgate_sdp.openmetrics.health', AppgateSDPCheck.CRITICAL)
 
