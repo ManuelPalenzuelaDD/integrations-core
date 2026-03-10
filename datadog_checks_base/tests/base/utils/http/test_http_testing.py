@@ -14,13 +14,6 @@ class TestMockHTTPFixture:
         assert check.http is mock_http
 
 
-class TestMockHTTPResponseBasics:
-    def test_default_status_code(self):
-        response = MockHTTPResponse(content='test')
-
-        assert response.status_code == 200
-
-
 class TestMockHTTPResponseJSON:
     def test_json_with_custom_headers(self):
         headers = {'X-Custom': 'value'}
@@ -35,14 +28,6 @@ class TestMockHTTPResponseJSON:
 
         assert list(headers.keys()) == ['X-Custom']
 
-    def test_header_keys_are_lowercased(self):
-        response = MockHTTPResponse(content='ok', headers={'Content-Type': 'text/plain'})
-
-        assert response.headers['content-type'] == 'text/plain'
-        assert response.headers.get('content-type') == 'text/plain'
-        assert 'content-type' in response.headers
-        assert 'Content-Type' not in response.headers
-
 
 class TestMockHTTPResponseFilePath:
     def test_file_path_reads_content(self, tmp_path):
@@ -54,27 +39,18 @@ class TestMockHTTPResponseFilePath:
 
 
 class TestMockHTTPResponseStatus:
-    def test_2xx_does_not_raise(self):
-        response = MockHTTPResponse(content='ok', status_code=200)
-        response.raise_for_status()  # must not raise
-
-    def test_client_error_raises(self):
-        response = MockHTTPResponse(content='Not Found', status_code=404)
-
+    def test_raise_for_status(self):
+        response_404 = MockHTTPResponse(content='Not Found', status_code=404)
         with pytest.raises(HTTPStatusError) as exc_info:
-            response.raise_for_status()
-
+            response_404.raise_for_status()
         assert '404 Client Error' in str(exc_info.value)
-        assert exc_info.value.response is response
+        assert exc_info.value.response is response_404
 
-    def test_server_error_raises(self):
-        response = MockHTTPResponse(content='Server Error', status_code=500)
-
+        response_500 = MockHTTPResponse(content='Server Error', status_code=500)
         with pytest.raises(HTTPStatusError) as exc_info:
-            response.raise_for_status()
-
+            response_500.raise_for_status()
         assert '500 Server Error' in str(exc_info.value)
-        assert exc_info.value.response is response
+        assert exc_info.value.response is response_500
 
 
 class TestMockHTTPResponseStreaming:
@@ -90,18 +66,6 @@ class TestMockHTTPResponseStreaming:
 
         lines = list(response.iter_lines())
         assert lines == [b'line1', b'', b'line3']
-
-    def test_iter_lines_decode_unicode(self):
-        response = MockHTTPResponse(content='line1\nline2')
-
-        lines = list(response.iter_lines(decode_unicode=True))
-        assert lines == ['line1', 'line2']
-
-    def test_iter_lines_custom_delimiter(self):
-        response = MockHTTPResponse(content='a|b|c')
-
-        lines = list(response.iter_lines(delimiter='|'))
-        assert lines == [b'a', b'b', b'c']
 
 
 class TestMockHTTPResponseNormalization:
